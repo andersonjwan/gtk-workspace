@@ -6,48 +6,57 @@ first_number (GtkButton *button_num,
 {
   GtkEntry *entry = GTK_ENTRY(user_data);
   char number = *(gtk_button_get_label(GTK_BUTTON(button_num)) + 0);
-
-  printf("%c", number);
-
+  char result[100];
+  strcpy(result, gtk_entry_get_text(GTK_ENTRY(entry)));
   switch(number) {
   case '0': {
-    gtk_entry_set_text(GTK_ENTRY(entry), "0");
+    strcat(result, "0");
+    gtk_entry_set_text(GTK_ENTRY(entry), result);
   }
     break;
   case '1': {
-    gtk_entry_set_text(GTK_ENTRY(entry), "1");
+    strcat(result, "1");
+    gtk_entry_set_text(GTK_ENTRY(entry), result);
   }
     break;
   case '2': {
-    gtk_entry_set_text(GTK_ENTRY(entry), "2");
+    strcat(result, "2");
+    gtk_entry_set_text(GTK_ENTRY(entry), result);
   }
     break;
   case '3': {
-    gtk_entry_set_text(GTK_ENTRY(entry), "3");
+    strcat(result, "3");
+    gtk_entry_set_text(GTK_ENTRY(entry), result);
   }
     break;
   case '4': {
-    gtk_entry_set_text(GTK_ENTRY(entry), "4");
+    strcat(result, "4");
+    gtk_entry_set_text(GTK_ENTRY(entry), result);
   }
     break;
   case '5': {
-    gtk_entry_set_text(GTK_ENTRY(entry), "5");
+    strcat(result, "5");
+    gtk_entry_set_text(GTK_ENTRY(entry), result);
   }
     break;
   case '6': {
-    gtk_entry_set_text(GTK_ENTRY(entry), "6");
+    strcat(result, "6");
+    gtk_entry_set_text(GTK_ENTRY(entry), result);
   }
     break;
   case '7': {
-    gtk_entry_set_text(GTK_ENTRY(entry), "7");
+    strcat(result, "7");
+    gtk_entry_set_text(GTK_ENTRY(entry), result);
   }
     break;
   case '8': {
-    gtk_entry_set_text(GTK_ENTRY(entry), "8");
+    strcat(result, "8");
+    gtk_entry_set_text(GTK_ENTRY(entry), result);
   }
     break;
   case '9': {
-    gtk_entry_set_text(GTK_ENTRY(entry), "9");
+    strcat(result, "9");
+    gtk_entry_set_text(GTK_ENTRY(entry), result);
   }
     break;
   }
@@ -76,7 +85,7 @@ activate (GtkApplication *main_app,
   /* create window, set title, set size, set border width */
   window = gtk_application_window_new(main_app);
   gtk_window_set_title(GTK_WINDOW(window), "Simple Calculator");
-  gtk_window_set_default_size(GTK_WINDOW(window), 400, 400);
+  gtk_window_set_default_size(GTK_WINDOW(window), 100, 100);
   gtk_container_set_border_width(GTK_CONTAINER(window), 10);
 
   /* create grid */
