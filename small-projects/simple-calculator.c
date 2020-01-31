@@ -64,6 +64,11 @@ insert_number (GtkButton *button_num,
     strcat(result, "+");
     gtk_entry_set_text(GTK_ENTRY(entry), result);
   }
+    break;
+  case '-': {
+    strcat(result, "-");
+    gtk_entry_set_text(GTK_ENTRY(entry), result);
+  }
   }
 }
 
@@ -86,7 +91,7 @@ calculate_sum(GtkButton *button_plus,
     char temp_num[100];
     int temp_pos = 0;
 
-    while(character != '+' && character != '\0') {
+    while(character != '+' && character != '-' && character != '\0') {
       temp_num[temp_pos] = character;
       ++temp_pos;
 
@@ -98,9 +103,18 @@ calculate_sum(GtkButton *button_plus,
     /* append null terminating character */
     temp_num[temp_pos] = '\0';
 
-    /* add to sum */
-    sum += atoi(temp_num);
+    printf("NUM: %s\n", temp_num);
+    /* determine sum or difference */
+    if(character == '+') {
+      printf("PLUS\n");
+      sum += atoi(temp_num);
+    }
+    else if(character == '-') {
+      printf("MINUS\n");
+      sum -= atoi(temp_num);
+    }
 
+    printf("CURRENT SUM: %d\n", sum);
     /* read after plus symbol */
     if(character != '\0') {
       ++pos;
@@ -116,13 +130,20 @@ calculate_sum(GtkButton *button_plus,
 }
 
 static void
+clear_entry(GtkButton *button_clear,
+            gpointer   user_data)
+{
+  GtkEntry *entry = GTK_ENTRY(user_data);
+  gtk_entry_set_text(entry, "");
+}
+
+static void
 activate (GtkApplication *main_app,
           gpointer        user_data)
 {
   GtkWidget *window;
   GtkWidget *grid;
   GtkWidget *entry;
-  GtkWidget *button_plus;
   GtkWidget *button_0;
   GtkWidget *button_1;
   GtkWidget *button_2;
@@ -133,7 +154,10 @@ activate (GtkApplication *main_app,
   GtkWidget *button_7;
   GtkWidget *button_8;
   GtkWidget *button_9;
+  GtkWidget *button_plus;
+  GtkWidget *button_minus;
   GtkWidget *button_equal;
+  GtkWidget *button_clear;
 
   /* create window, set title, set size, set border width */
   window = gtk_application_window_new(main_app);
@@ -149,7 +173,7 @@ activate (GtkApplication *main_app,
   /* create entry and attach to grid */
   entry = gtk_entry_new();
   gtk_entry_set_alignment(GTK_ENTRY(entry), 1);
-  gtk_grid_attach(GTK_GRID(grid), entry, 1, 1, 3, 1);
+  gtk_grid_attach(GTK_GRID(grid), entry, 1, 1, 4, 1);
 
   /* create buttons and attach to grid */
   button_0 = gtk_button_new_with_label("0");
@@ -163,7 +187,9 @@ activate (GtkApplication *main_app,
   button_8 = gtk_button_new_with_label("8");
   button_9 = gtk_button_new_with_label("9");
   button_plus = gtk_button_new_with_label("+");
+  button_minus = gtk_button_new_with_label("-");
   button_equal= gtk_button_new_with_label("=");
+  button_clear = gtk_button_new_with_label("C");
 
   gtk_grid_attach(GTK_GRID(grid), button_9, 3, 2, 1, 1);
   gtk_grid_attach(GTK_GRID(grid), button_8, 2, 2, 1, 1);
@@ -176,7 +202,9 @@ activate (GtkApplication *main_app,
   gtk_grid_attach(GTK_GRID(grid), button_1, 1, 4, 1, 1);
   gtk_grid_attach(GTK_GRID(grid), button_0, 2, 5, 1, 1);
   gtk_grid_attach(GTK_GRID(grid), button_plus, 1, 5, 1, 1);
-  gtk_grid_attach(GTK_GRID(grid), button_equal, 3, 5, 1, 1);
+  gtk_grid_attach(GTK_GRID(grid), button_minus, 3, 5, 1, 1);
+  gtk_grid_attach(GTK_GRID(grid), button_clear, 4, 2, 1, 1);
+  gtk_grid_attach(GTK_GRID(grid), button_equal, 4, 3, 1, 3);
 
   /* button conection(s) */
   g_signal_connect(button_0, "clicked", G_CALLBACK(insert_number), entry);
@@ -191,7 +219,9 @@ activate (GtkApplication *main_app,
   g_signal_connect(button_9, "clicked", G_CALLBACK(insert_number), entry);
 
   g_signal_connect(button_plus, "clicked", G_CALLBACK(insert_number), entry);
+  g_signal_connect(button_minus, "clicked", G_CALLBACK(insert_number), entry);
   g_signal_connect(button_equal, "clicked", G_CALLBACK(calculate_sum), entry);
+  g_signal_connect(button_clear, "clicked", G_CALLBACK(clear_entry), entry);
 
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(grid));
   gtk_widget_show_all(window);
