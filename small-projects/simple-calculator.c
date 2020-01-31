@@ -1,13 +1,14 @@
 #include <gtk/gtk.h>
 
 static void
-first_number (GtkButton *button_num,
+insert_number (GtkButton *button_num,
           gpointer   user_data)
 {
   GtkEntry *entry = GTK_ENTRY(user_data);
   char number = *(gtk_button_get_label(GTK_BUTTON(button_num)) + 0);
   char result[100];
   strcpy(result, gtk_entry_get_text(GTK_ENTRY(entry)));
+
   switch(number) {
   case '0': {
     strcat(result, "0");
@@ -59,7 +60,59 @@ first_number (GtkButton *button_num,
     gtk_entry_set_text(GTK_ENTRY(entry), result);
   }
     break;
+  case '+': {
+    strcat(result, "+");
+    gtk_entry_set_text(GTK_ENTRY(entry), result);
   }
+  }
+}
+
+static void
+calculate_sum(GtkButton *button_plus,
+              gpointer  user_data)
+{
+  GtkEntry *entry = GTK_ENTRY(user_data);
+
+  /* parse entry into respective values */
+  int sum = 0;
+  int num, pos = 0;
+  char character;
+  char input[100];
+
+  strcpy(input, gtk_entry_get_text(GTK_ENTRY(entry)));
+  character = input[pos];
+
+  while(character != '\0') {
+    char temp_num[100];
+    int temp_pos = 0;
+
+    while(character != '+' && character != '\0') {
+      temp_num[temp_pos] = character;
+      ++temp_pos;
+
+      /* look at next character */
+      ++pos;
+      character = input[pos];
+    }
+
+    /* append null terminating character */
+    temp_num[temp_pos] = '\0';
+
+    /* add to sum */
+    sum += atoi(temp_num);
+
+    /* read after plus symbol */
+    if(character != '\0') {
+      ++pos;
+      character = input[pos];
+    }
+  }
+
+  /* set sum result */
+  char result[100];
+
+  sprintf(result, "%d", sum);
+  gtk_entry_set_text(entry, result);
 }
 
 static void
@@ -95,6 +148,7 @@ activate (GtkApplication *main_app,
 
   /* create entry and attach to grid */
   entry = gtk_entry_new();
+  gtk_entry_set_alignment(GTK_ENTRY(entry), 1);
   gtk_grid_attach(GTK_GRID(grid), entry, 1, 1, 3, 1);
 
   /* create buttons and attach to grid */
@@ -125,18 +179,20 @@ activate (GtkApplication *main_app,
   gtk_grid_attach(GTK_GRID(grid), button_equal, 3, 5, 1, 1);
 
   /* button conection(s) */
-  g_signal_connect(button_0, "clicked", G_CALLBACK(first_number), entry);
-  g_signal_connect(button_1, "clicked", G_CALLBACK(first_number), entry);
-  g_signal_connect(button_2, "clicked", G_CALLBACK(first_number), entry);
-  g_signal_connect(button_3, "clicked", G_CALLBACK(first_number), entry);
-  g_signal_connect(button_4, "clicked", G_CALLBACK(first_number), entry);
-  g_signal_connect(button_5, "clicked", G_CALLBACK(first_number), entry);
-  g_signal_connect(button_6, "clicked", G_CALLBACK(first_number), entry);
-  g_signal_connect(button_7, "clicked", G_CALLBACK(first_number), entry);
-  g_signal_connect(button_8, "clicked", G_CALLBACK(first_number), entry);
-  g_signal_connect(button_9, "clicked", G_CALLBACK(first_number), entry);
-  g_signal_connect(button_plus, "clicked", G_CALLBACK(first_number), entry);
-  g_signal_connect(button_equal, "clicked", G_CALLBACK(first_number), entry);
+  g_signal_connect(button_0, "clicked", G_CALLBACK(insert_number), entry);
+  g_signal_connect(button_1, "clicked", G_CALLBACK(insert_number), entry);
+  g_signal_connect(button_2, "clicked", G_CALLBACK(insert_number), entry);
+  g_signal_connect(button_3, "clicked", G_CALLBACK(insert_number), entry);
+  g_signal_connect(button_4, "clicked", G_CALLBACK(insert_number), entry);
+  g_signal_connect(button_5, "clicked", G_CALLBACK(insert_number), entry);
+  g_signal_connect(button_6, "clicked", G_CALLBACK(insert_number), entry);
+  g_signal_connect(button_7, "clicked", G_CALLBACK(insert_number), entry);
+  g_signal_connect(button_8, "clicked", G_CALLBACK(insert_number), entry);
+  g_signal_connect(button_9, "clicked", G_CALLBACK(insert_number), entry);
+
+  g_signal_connect(button_plus, "clicked", G_CALLBACK(insert_number), entry);
+  g_signal_connect(button_equal, "clicked", G_CALLBACK(calculate_sum), entry);
+
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(grid));
   gtk_widget_show_all(window);
 }
