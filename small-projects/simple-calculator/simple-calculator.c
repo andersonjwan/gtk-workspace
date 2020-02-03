@@ -1,4 +1,7 @@
 #include <gtk/gtk.h>
+#include <stdbool.h>
+
+static bool reset = false;
 
 static void
 insert_number (GtkButton *button_num,
@@ -7,7 +10,14 @@ insert_number (GtkButton *button_num,
   GtkEntry *entry = GTK_ENTRY(user_data);
   char number = *(gtk_button_get_label(GTK_BUTTON(button_num)) + 0);
   char result[100];
-  strcpy(result, gtk_entry_get_text(GTK_ENTRY(entry)));
+
+  if(reset) {
+    gtk_entry_set_text(GTK_ENTRY(entry), "");
+    reset = false;
+  }
+  else {
+    strcpy(result, gtk_entry_get_text(GTK_ENTRY(entry)));
+  }
 
   switch(number) {
   case '0': {
@@ -76,11 +86,14 @@ static void
 calculate_sum(GtkButton *button_plus,
               gpointer  user_data)
 {
+  reset = true;
+
   GtkEntry *entry = GTK_ENTRY(user_data);
 
   /* parse entry into respective values */
   int sum = 0;
   int num, pos = 0;
+  int operator = 0; // 0 -> none, 1 -> add, 2 -> subtract
   char character;
   char input[100];
 
@@ -103,18 +116,27 @@ calculate_sum(GtkButton *button_plus,
     /* append null terminating character */
     temp_num[temp_pos] = '\0';
 
-    printf("NUM: %s\n", temp_num);
     /* determine sum or difference */
-    if(character == '+') {
-      printf("PLUS\n");
+    if(operator == 1) {
       sum += atoi(temp_num);
     }
-    else if(character == '-') {
-      printf("MINUS\n");
+    else if(operator == 2) {
       sum -= atoi(temp_num);
     }
+    else {
+      sum = atoi(temp_num);
+    }
 
-    printf("CURRENT SUM: %d\n", sum);
+    if(character == '+') {
+      operator = 1;
+    }
+    else if(character == '-') {
+      operator = 2;
+    }
+    else {
+      operator = 0;
+    }
+
     /* read after plus symbol */
     if(character != '\0') {
       ++pos;
